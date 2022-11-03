@@ -2,7 +2,8 @@
 
 namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
+use Illuminate\Http\Response;
 
 class ExampleTest extends TestCase {
     /**
@@ -12,5 +13,22 @@ class ExampleTest extends TestCase {
      */
     public function test_that_true_is_true() {
         $this->assertTrue(true);
+    }
+
+    public function testLoginWithNoPassword(){
+        $payload = [
+            'email' => 'admin@astronomerguy.project'
+        ];
+        
+        $this->json('post', 'api/login')
+             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+    public function testLoginWithNoEmail(){
+        $payload = [
+            'password' => 'astronomer_guy'
+        ];
+        
+        $this->json('post', 'api/login')
+             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY); 
     }
 }
