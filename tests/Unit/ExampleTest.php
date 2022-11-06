@@ -20,7 +20,7 @@ class ExampleTest extends TestCase {
             'email' => 'admin@astronomerguy.project'
         ];
         
-        $this->json('post', 'api/login')
+        $this->json('post', 'api/login',$payload)
              ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
     public function testLoginWithNoEmail(){
@@ -28,7 +28,21 @@ class ExampleTest extends TestCase {
             'password' => 'astronomer_guy'
         ];
         
-        $this->json('post', 'api/login')
+        $this->json('post', 'api/login',$payload)
              ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY); 
     }
+    public function testNotExistEmail(){
+        $payload = ['email' => 'noone@astonomerguy.project'
+    ];
+
+    $this->json('post', 'api/login',$payload)
+         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+    public function testNoEmailNoPass(){
+        $payload = ['email' => '','password' => ''];
+
+        $this->json('post', 'api/login',$payload)
+             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        
+    } 
 }
