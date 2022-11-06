@@ -1,0 +1,27 @@
+name: AutoTestAstronomersNewsFeed
+
+on:
+  push: 
+    branches: ["master"]
+
+jobs:
+  NewsFeed:
+    runs-on: ubuntu-latest
+    services:
+      image: mysql:8.0.21
+      env:
+        MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        MYSQL_DATABASE: post_service
+      ports: 
+        - 3306:3306
+      options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - name: Install PHP
+        run: 
+          uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+          with:
+            php-version: '8.0'
+      - name: Setup Database
+        run: mysql --host 127.0.0.1 --port 3306 -u root -e "SHOW DATABASE LIKE 'post_service'"
+
+
