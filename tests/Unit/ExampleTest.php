@@ -34,7 +34,7 @@ class ExampleTest extends TestCase {
         $payload = ['email' => 'noone@astonomerguy.project','password' =>'astronomer_guy'];
 
         $this->json('post', 'api/login',$payload)
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+            ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
     public function testNoEmailNoPass(){
