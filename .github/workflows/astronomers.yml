@@ -18,11 +18,26 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - name: Install PHP
-        run: 
-          uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-          with:
-            php-version: '8.0'
+        uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+        with:
+          php-version: '8.0'
       - name: Setup Database
         run: mysql --host 127.0.0.1 --port 3306 -u root -e "SHOW DATABASE LIKE 'post_service'"
-
+      - name: Install Dependencies
+        run: composer install --no-ansi --no-progress --no-interaction --prefer-dist
+      - name: Copy .Env .Example
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Generate Key
+        run: php artisan key:generate
+      - name: Migrate Database & Excute Test
+        env: 
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: post_service
+          DB_USERNAME: root
+          DB_PASSWORD: 
+        run: |
+          php artisan migrate:fresh --seed
+          vendor/bin/phpunit
 
