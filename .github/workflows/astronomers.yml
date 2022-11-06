@@ -23,6 +23,10 @@ jobs:
           php-version: '8.0'
       - name: Setup Database
         run: mysql --host 127.0.0.1 --port 3306 -u root -e "SHOW DATABASES LIKE 'post_service'"
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with: 
+          ref: master
       - name: Install Dependencies
         run: composer install --no-ansi --no-progress --no-interaction --prefer-dist
       - name: Copy .Env .Example
