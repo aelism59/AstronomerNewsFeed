@@ -2,18 +2,32 @@
 
 namespace Tests\Unit;
 
+use App\Models\Post;
+use App\Models\Role;
 use App\Models\UserRole;
 use Tests\TestCase;
 use Illuminate\Http\Response;
+use PhpParser\Node\Expr\Assign;
 
 class ExampleTest extends TestCase {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function test_that_true_is_true() {
-        $this->assertTrue(true);
+    
+    public $token;
+
+    protected function setUp():void{
+        parent::setUp();
+        $payload = ['email' => 'admin@astronomerguy.project', 'password'=> 'astronomer_guy'];
+        
+        $response = $this->json('post', 'api/login',$payload)
+             ->assertStatus(Response::HTTP_OK);
+             $this->token=$response->decodeResponseJson()['token'];
+    }
+
+    public function testLogin(){
+        $payload = ['email' => 'admin@astronomerguy.project', 'password'=> 'astronomer_guy'];
+        
+        $response = $this->json('post', 'api/login',$payload)
+             ->assertStatus(Response::HTTP_OK);
+             $this->token=$response->decodeResponseJson()['token'];
     }
 
     public function testLoginWithNoPassword(){
@@ -45,30 +59,38 @@ class ExampleTest extends TestCase {
         
     }
     public function testEditorCanCreatePost(){
-        $user = UserRole::where('role_id',4)->first();
-        $payload = ['title'=> 'Final 5','content'=> 'Final is a big guy who...'];
+        
+        $payload = ['title'=> 'Final 5','contents'=> 'Final is a big guy who...'];
+        $response = $this->json('post','api/posts',$payload, ['Authorization'=>'Bearer '.$this->token]);
 
-        $response = $this->actingAs($user, 'web')
-        ->call('POST', route('/api/posts', $payload));
-
-        $response->assertOk();
+        $response->assertStatus(Response::HTTP_CREATED);
         $response->assertJsonStructure([
             "title", "contents", "tag", "author_id", "updated_at", "created_at","id"
         ]);
-    return $user;
     
     }
     public function testEditorCreateNotExistContentPost(){
-        $user = UserRole::where('role_id',4)->first();
+        
         $payload = ['title'=> '','content'=> ''];
 
-        $response = $this->actingAs($user, 'web')
-        ->call('POST', route('/api/posts', $payload));
+        $response = $this->json('post','api/posts',$payload, ['Authorization'=>'Bearer '.$this->token]);
 
-        $response->assertOk();
-        $response->assertJsonStructure([
-            "title", "contents", "tag", "author_id", "updated_at", "created_at","id"]);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     
-    return $user;
+    }
+    public function testUserCreateComments(){
+        
+        $payload = ['comment'=> 'This is phenomenal'];
+        
+        $post = Post::all()->first();
+
+        $response = $this->json('post',route('posts.comments.store', ['post'=>$post]),$payload, ['Authorization'=>'Bearer '.$this->token]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $response->assertJsonStructure([
+            "comment", "is_approved", "user_id", "commentable_id", "commentable_type", "updated_at", "created_at", "id"
+
+        ]);
+        
     }
 }
