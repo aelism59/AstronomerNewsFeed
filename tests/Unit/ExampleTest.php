@@ -45,15 +45,26 @@ class ExampleTest extends TestCase {
         
     }
     public function testEditorCanCreatePost(){
-        $editor = UserRole::where('role_id',4)->first();
+        $user = UserRole::where('role_id',4)->first();
         $payload = ['title'=> 'Final 5','content'=> 'Final is a big guy who...'];
 
-        $response = $this->actingAs($editor, 'web')
+        $response = $this->actingAs($user, 'web')
         ->call('POST', route('/api/posts', $payload));
 
         $response->assertOk();
         $response->assertJsonStructure([
             "title", "contents", "tag", "author_id", "updated_at", "created_at","id"
         ]);
+    }
+    public function testEditorCreateNotExistContentPost(){
+        $editor = UserRole::where('role_id',4)->first();
+        $payload = ['title'=> '','content'=> ''];
+
+        $response = $this->actingAs($editor, 'web')
+        ->call('POST', route('/api/posts', $payload));
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            "title", "contents", "tag", "author_id", "updated_at", "created_at","id"]);
     }
 }
