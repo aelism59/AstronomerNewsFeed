@@ -55,7 +55,7 @@ class ExampleTest extends TestCase {
         $response->assertJsonStructure([
             "title", "contents", "tag", "author_id", "updated_at", "created_at","id"
         ]);
-    
+    return $user;
     
     }
     public function testEditorCreateNotExistContentPost(){
@@ -68,5 +68,7 @@ class ExampleTest extends TestCase {
         $response->assertOk();
         $response->assertJsonStructure([
             "title", "contents", "tag", "author_id", "updated_at", "created_at","id"]);
+    
+    return $user;
     }
 }
