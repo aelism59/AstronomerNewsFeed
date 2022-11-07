@@ -30,6 +30,7 @@ class ExampleTest extends TestCase {
              $this->token=$response->decodeResponseJson()['token'];
     }
 
+
     public function testLoginWithNoPassword(){
         $payload = ['email' => 'admin@astronomerguy.project'];
         
@@ -59,9 +60,14 @@ class ExampleTest extends TestCase {
         
     }
     public function testEditorCanCreatePost(){
+        $payload = ['email' => 'editor@astronomerguy.project', 'password'=> '1234'];
         
+        $response = $this->json('post', 'api/login',$payload)
+             ->assertStatus(Response::HTTP_OK);
+             $token=$response->decodeResponseJson()['token'];
+
         $payload = ['title'=> 'Final 5','contents'=> 'Final is a big guy who...'];
-        $response = $this->json('post','api/posts',$payload, ['Authorization'=>'Bearer '.$this->token]);
+        $response = $this->json('post','api/posts',$payload, ['Authorization'=>'Bearer '.$token]);
 
         $response->assertStatus(Response::HTTP_CREATED);
         $response->assertJsonStructure([
@@ -69,7 +75,7 @@ class ExampleTest extends TestCase {
         ]);
     
     }
-    public function testEditorCreateNotExistContentPost(){
+    public function testAdminCreateNotExistContentPost(){
         
         $payload = ['title'=> '','content'=> ''];
 
@@ -78,7 +84,7 @@ class ExampleTest extends TestCase {
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     
     }
-    public function testUserCreateComments(){
+    public function testAdminCreateComments(){
         
         $payload = ['comment'=> 'This is phenomenal'];
         
