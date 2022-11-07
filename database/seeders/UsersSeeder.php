@@ -26,5 +26,19 @@ class UsersSeeder extends Seeder {
             'name'=>'Astronomy Guy Admin',
         ]);
         $user->roles()->attach(Role::where('slug', 'admin')->first());
+
+        $user = User::create([
+            'email'=>'editor@astronomerguy.project',
+            'password'=>Hash::make('1234'),
+            'name'=>'Editor',
+        ]);
+        $user->roles()->attach(Role::where('slug', 'editor')->first());
+
+        $user = User::create([
+            'email'=>'user@astronomerguy.project',
+            'password'=>Hash::make('1234'),
+            'name'=>'User',
+        ]);
+        $user->roles()->attach(Role::where('slug', 'user')->first());
     }
 }
