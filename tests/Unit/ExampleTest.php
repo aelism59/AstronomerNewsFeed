@@ -213,7 +213,7 @@ class ExampleTest extends TestCase {
         //$response = $this->json('delete',route('posts.comments.destroy', ['post'=>$post]),$payload, ['Authorization'=>'Bearer '.$token]);
         $response = $this->json('delete','api/posts/1/comments/2',$payload, ['Authorization'=>'Bearer '.$token]);
 
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonStructure([
             
 
