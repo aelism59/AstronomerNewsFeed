@@ -141,6 +141,54 @@ class ExampleTest extends TestCase {
         ]);
         
     }
+    public function testEditorCreatePost(){
+        $payload = ['email' => 'editor@astronomerguy.project', 'password'=> '1234'];
+        
+        $response = $this->json('post', 'api/login',$payload)
+             ->assertStatus(Response::HTTP_OK);
+             $token=$response->decodeResponseJson()['token'];
+
+        $payload = ['title'=> 'Final 5','contents'=> 'Final is a big guy who...'];
+        $response = $this->json('post','api/posts',$payload, ['Authorization'=>'Bearer '.$token]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $response->assertJsonStructure([
+            "title", "contents", "tag", "author_id", "updated_at", "created_at","id"
+        ]);
+    
+    }
+    public function testEditorEditPost(){
+        $payload = ['email' => 'editor@astronomerguy.project', 'password'=> '1234'];
+        
+        $response = $this->json('post', 'api/login',$payload)
+             ->assertStatus(Response::HTTP_OK);
+             $token=$response->decodeResponseJson()['token'];
+
+        $payload = ['title'=> 'Final 6','contents'=> 'Only you can improve yourself...'];
+        $response = $this->json('put','api/posts/1?title=',$payload, ['Authorization'=>'Bearer '.$token]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            "title", "contents", "tag", "author_id", "updated_at", "created_at","id"
+        ]);
+    
+    }
+    public function testEditorDeletePost(){
+        $payload = ['email' => 'editor@astronomerguy.project', 'password'=> '1234'];
+        
+        $response = $this->json('post', 'api/login',$payload)
+             ->assertStatus(Response::HTTP_OK);
+             $token=$response->decodeResponseJson()['token'];
+
+        $payload = ['title'=> 'Final 6','contents'=> 'Only you can improve yourself...'];
+        $response = $this->json('delete','api/users/1',$payload, ['Authorization'=>'Bearer '.$token]);
+
+        $response->assertStatus(Response::HTTP_CONFLICT);
+        $response->assertJsonStructure([
+            
+        ]);
+    
+    }
     public function testUserReadPost(){
         $payload = ['email' => 'USER@astronomerguy.project', 'password'=> '1234'];
         
