@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Post;
 use App\Models\Role;
 use App\Models\UserRole;
+use BeyondCode\Comments\Comment;
 use Tests\TestCase;
 use Illuminate\Http\Response;
 use PhpParser\Node\Expr\Assign;
@@ -233,7 +234,7 @@ class ExampleTest extends TestCase {
              ->assertStatus(Response::HTTP_OK);
              $token=$response->decodeResponseJson()['token'];
         
-        $payload = ['comment'=> 'No wonder...'];
+        $payload =  ['No wonder...'];
         
         $post = Post::all()->first();
 
@@ -259,9 +260,9 @@ class ExampleTest extends TestCase {
         $post = Post::all()->first();
 
         //$response = $this->json('delete',route('posts.comments.destroy', ['post'=>$post]),$payload, ['Authorization'=>'Bearer '.$token]);
-        $response = $this->json('delete','api/posts/1/comments/2',$payload, ['Authorization'=>'Bearer '.$token]);
+        $response = $this->json('delete','api/posts/comments' .$post->id,$payload, ['Authorization'=>'Bearer '.$token]);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJsonStructure([
             
 
